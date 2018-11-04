@@ -1,0 +1,8 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+spec:
+  template:
+    metadata:
+      annotations:
+        prometheus.io.port: "10002" // HL
+        prometheus.io.scrape: "true" // HL

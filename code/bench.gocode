@@ -1,0 +1,19 @@
+var order = &Order{
+	Id:        "101",
+	Status:    "Created",
+	CreatedOn: time.Now().Unix(),
+	OrderItems: []*Order_OrderItem{
+		&Order_OrderItem{
+			Code:      "knd100",
+			Name:      "Kindle Voyage",
+			UnitPrice: 220,
+			Quantity:  1,
+		},
+		&Order_OrderItem{
+			Code:      "kc101",
+			Name:      "Kindle Voyage SmartShell Case",
+			UnitPrice: 10,
+			Quantity:  2,
+		},
+	},
+}

@@ -1,0 +1,9 @@
+import "github.com/golang/protobuf/proto"
+
+func main() {
+	msg := pb.SimpleMessage{A: 150, B: "testing"}
+	b, _ := proto.Marshal(&msg)
+	fmt.Printf("%x\n", b)
+
+	// prints 08 96 01 12 07 74 65 73 74 69 6e 67
+}

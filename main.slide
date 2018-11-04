@@ -1,0 +1,174 @@
+Efficient services with gRPC and Go
+15:04 13 Nov 2018
+Tags: grpc, go
+
+Andzej Maciusovic
+Software Engineer, Trackforce
+andzej.maciusovic@gmail.com
+https://github.com/anjmao
+
+* Before GRPC
+.image img/http1.png _ 650
+
+: 1) Not efficient HTTP/1.1 protocol (connections, no headers compression, no streaming)
+: 2) CPU cost for serialize/deserialize. Text based data is not machine friendly
+: 3) Network Bandwith both public and internal
+: 4) Not so easy to use, requires to pass correct headers (etc. Accept text/JSON)
+
+* HTTP/2
+
+Goals for better performance
+
+- Reduce latency by multiplexing multiple requests over a single TCP connection.
+- Data compression of HTTP headers.
+- Server push (streaming).
+- Request prioritization.
+
+.link http://www.http2demo.io/
+
+* Protocol Buffers
+
+- Language and platform independant.
+- Flexible, efficient, mechanism for serializing structured data.
+- Think XML, but smaller, faster, and simpler.
+- Primary use case - network communications.
+
+* Example
+
+.code code/test-msg.proto
+.code code/test-msg-gen.sh
+.code code/test-msg.gocode
+
+: Message fields and types
+: Language agnostic
+
+* Protobuf Performance
+
+.code code/bench.gocode
+
+* Results
+
+- Protocol Buffers Marshal: *819* ns/op
+- Protocol Buffers Unmarshal: *1163* ns/op
+- JSON Marshal: *3316* ns/op
+- JSON Unmarshal: *7196* ns/op
+- XML Marshal: *9248* ns/op
+- XML Unmarshal: *30485* ns/op
+
+* HTTP/2 + Protocol Buffers ~= GRPC
+
+- A high performance, open source, general-purpose RPC framework.
+- HTTP/2 protocol.
+- Protocol Buffers.
+- Unary, client, server and bidirectional streams.
+
+- Server-client libraries and tools for 12+ languages.
+
+.link https://grpc.io/
+
+* Source Code Overview
+
+.image img/repos.png 400 _
+
+: HTTP/2 is used for transport.
+: Protocol buffers are used for data contract.
+
+* Server-Client RPC calls
+.image img/grpc-basics.png _ 700
+
+* Developing services
+1. Define services inside proto files.
+2. Invoke protoc compiler to generate language code.
+3. Implement server interface.
+4. Call server with generated client.
+
+* 1) Define services inside proto files
+.code code/proto-service.proto
+
+* 2) Invoke protoc compiler to generate language code
+.code code/proto-gen.sh
+
+* 3) Implement server interface
+.code code/gen-server.gocode
+
+* 4) Call server with generated client
+.code code/gen-client.gocode
+
+* Interceptors (middlewares)
+
+.code code/interceptors.gocode
+
+* Auth 
+- SSL/TLS.
+- Token-based authentication with Google.
+
+.link https://grpc.io/docs/guides/auth.html
+
+* Load Balancing
+
+- Proxy.
+- Client.
+- Lookaside.
+
+.link https://grpc.io/blog/loadbalancing
+
+* Proxy Load Balancing
+
+.image img/proxy-lb.png _ 850
+
+: Traditional setup - Many clients connecting to services behind a proxy
+: Need trust boundary between servers and clients
+: L3/L4 Transport load balancer terminates TCP conn and opens another conn to forward.
+: L3/L4 Less latency.
+: L7 LB terminates and parses HTTP/2 protocol and creates new HTTP/2 conn.
+: L7 Is more flexible, traffic could be formwared by headers.
+
+
+* Client Load Balancing
+
+.image img/client-lb.png _ 850
+
+: Very high traffic between clients and servers
+: Clients can be trusted
+
+* Lookaside Load Balancing
+
+.image img/lookasie-lb.png _ 750
+
+: Microservices - N clients, M servers in the data center
+: Very high performance requirements (low latency, high traffic)
+: Client can be untrusted
+
+* Kubernetes
+
+- Load Balancing.
+- Prometheus.
+
+.image img/Kubernetes_Gophers.png _ 300
+
+* Ngnix ingress
+
+.code code/ingress-annotation
+
+* Prometheus
+1. Add prometheus interceptor.
+
+2. Configure pods.
+.code code/promo-annotation
+
+.link https://github.com/grpc-ecosystem/go-grpc-prometheus
+
+* Metrics
+
+.image img/promo-grpc.png _ 700
+
+
+* Performance across languages
+
+.link https://performance-dot-grpc-testing.appspot.com/explore?dashboard=5652536396611584&widget=490377658&container=1286539696 Performance dashboards
+
+* GRPC Go
+
+- Demo.
+
+: Some language implementations like node.js, C#, Swift do uses C++ core library.

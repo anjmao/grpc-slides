@@ -1,0 +1,9 @@
+syntax = "proto3";
+package pb;
+
+message SimpleMessage {
+    int32 a = 1;
+    string b = 2;
+    bool c = 3;
+    repeated Message = 4;
+}
